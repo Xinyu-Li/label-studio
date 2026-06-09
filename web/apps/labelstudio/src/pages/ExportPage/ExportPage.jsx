@@ -24,7 +24,6 @@ const LARGE_EXPORT_TASK_THRESHOLD = 1000;
 const EXPORT_TIMEOUT_DOCS_URL = "https://labelstud.io/guide/export.html#Export-timeout-in-Community-Edition";
 const EXPORT_CONSOLE_DOCS_URL = "https://labelstud.io/guide/export.html#Export-using-console-command";
 const EXPORT_SNAPSHOT_SDK_URL = "https://api.labelstud.io/api-reference/api-reference/projects/exports/create";
-const ENTERPRISE_URL = "https://docs.humansignal.com/guide/label_studio_compare";
 
 // const formats = {
 //   json: 'JSON',
@@ -293,11 +292,7 @@ const ExportLargeProjectWarning = ({ taskCount }) => {
         <a className="no-go" href={EXPORT_TIMEOUT_DOCS_URL} target="_blank" rel="noreferrer">
           CLI/SDK export options
         </a>{" "}
-        or consider{" "}
-        <a className="no-go" href={ENTERPRISE_URL} target="_blank" rel="noreferrer">
-          Enterprise
-        </a>{" "}
-        for background exports at scale.
+        for more reliable large exports.
       </div>
     </div>
   );
@@ -369,19 +364,6 @@ const ExportTimeoutGuidance = ({ projectId, exportType }) => {
                   <IconExternal className={cn("export-page").elem("timeout-link-icon").toClassName()} />
                 </a>{" "}
                 to create and download a snapshot without relying on a single UI request.
-              </div>
-            </div>
-          </li>
-          <li>
-            <div className={cn("export-page").elem("timeout-action-item").toClassName()}>
-              <IconWarningCircleFilled className={cn("export-page").elem("timeout-action-icon").toClassName()} />
-              <div className={cn("export-page").elem("timeout-action-content").toClassName()}>
-                For large-scale exports in the UI, consider{" "}
-                <a className="no-go" href={ENTERPRISE_URL} target="_blank" rel="noreferrer">
-                  Label Studio Enterprise
-                  <IconExternal className={cn("export-page").elem("timeout-link-icon").toClassName()} />
-                </a>{" "}
-                since it is designed for large-scale projects and asynchronous exports.
               </div>
             </div>
           </li>

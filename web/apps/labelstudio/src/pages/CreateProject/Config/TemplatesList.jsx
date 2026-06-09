@@ -4,7 +4,7 @@ import { useAPI } from "../../../providers/ApiProvider";
 import { cn } from "../../../utils/bem";
 import "./Config.scss";
 import { IconInfo } from "@humansignal/icons";
-import { Button, EnterpriseBadge } from "@humansignal/ui";
+import { Button } from "@humansignal/ui";
 
 const listClass = cn("templates-list");
 
@@ -16,30 +16,24 @@ const Arrow = () => (
 );
 
 const TemplatesInGroup = ({ templates, group, onSelectRecipe, isEdition }) => {
+  const isCommunityEdition = isEdition === "Community";
   const picked = templates
-    .filter((recipe) => recipe.group === group)
+    .filter((recipe) => recipe.group === group && !(isCommunityEdition && recipe.type === "enterprise"))
     // templates without `order` go to the end of the list
     .sort((a, b) => (a.order ?? Number.POSITIVE_INFINITY) - (b.order ?? Number.POSITIVE_INFINITY));
-
-  const isCommunityEdition = isEdition === "Community";
 
   return (
     <ul>
       {picked.map((recipe) => {
-        const isEnterpriseTemplate = recipe.type === "enterprise";
-        const isDisabled = isCommunityEdition && isEnterpriseTemplate;
-
         return (
           <li
             key={recipe.title}
-            onClick={() => !isDisabled && onSelectRecipe(recipe)}
-            className={listClass.elem("template").mod({ disabled: isDisabled }).toClassName()}
-            title={isDisabled ? "Enterprise feature - Available in Label Studio Enterprise" : ""}
+            onClick={() => onSelectRecipe(recipe)}
+            className={listClass.elem("template").toClassName()}
           >
             <img src={recipe.image} alt={""} />
             <div className="flex flex-col items-center w-full">
               <h3 className="flex flex-1 justify-center text-center w-full">{recipe.title}</h3>
-              {isEnterpriseTemplate && isCommunityEdition && <EnterpriseBadge className="mb-base" />}
             </div>
           </li>
         );

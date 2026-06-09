@@ -1,4 +1,4 @@
-import { Button, Checkbox, Dropdown, EnterpriseBadge } from "@humansignal/ui";
+import { Button, Checkbox, Dropdown } from "@humansignal/ui";
 import { inject, observer } from "mobx-react";
 import React from "react";
 import { cn } from "../../utils/bem";
@@ -10,28 +10,41 @@ const injector = inject(({ store }) => {
   };
 });
 
+const isEnterpriseColumn = (col) => col.enterprise_badge ?? col.original?.enterprise_badge;
+
+const withoutEnterpriseColumns = (columns) =>
+  columns
+    .filter((col) => !isEnterpriseColumn(col))
+    .map((col) => {
+      if (!col.children) return col;
+
+      return {
+        ...col,
+        children: col.children.filter((child) => !isEnterpriseColumn(child)),
+      };
+    })
+    .filter((col) => !col.children || col.children.length > 0);
+
 const FieldsMenu = observer(({ columns, WrapperComponent, onClick, onReset, selected, resetTitle }) => {
   const MenuItem = (col, onClick) => {
-    const enterpriseBadge = col.enterprise_badge ?? col.original?.enterprise_badge;
-    const shouldDisable = col.disabled || enterpriseBadge;
+    const shouldDisable = col.disabled;
 
     const titleContent = <span>{col.title}</span>;
 
     return (
       <Menu.Item key={col.key} name={col.key} onClick={onClick} disabled={shouldDisable}>
         {WrapperComponent && col.wra !== false ? (
-          <WrapperComponent column={col} disabled={shouldDisable} enterpriseBadge={enterpriseBadge}>
+          <WrapperComponent column={col} disabled={shouldDisable}>
             {titleContent}
           </WrapperComponent>
         ) : (
-          <span className="flex items-center justify-between w-full gap-base">
-            {titleContent}
-            {enterpriseBadge && <EnterpriseBadge style="ghost" />}
-          </span>
+          <span className="flex items-center justify-between w-full gap-base">{titleContent}</span>
         )}
       </Menu.Item>
     );
   };
+
+  const visibleColumns = withoutEnterpriseColumns(columns);
 
   return (
     <Menu size="small" selectedKeys={selected ? [selected] : ["none"]} closeDropdownOnItemClick={false}>
@@ -45,7 +58,7 @@ const FieldsMenu = observer(({ columns, WrapperComponent, onClick, onReset, sele
           onReset,
         )}
 
-      {columns.map((col) => {
+      {visibleColumns.map((col) => {
         if (col.children) {
           return (
             <Menu.Group key={col.key} title={col.title}>
@@ -140,7 +153,7 @@ export const FieldsButton = injector(
   },
 );
 
-FieldsButton.Checkbox = observer(({ column, children, disabled, enterpriseBadge }) => {
+FieldsButton.Checkbox = observer(({ column, children, disabled }) => {
   const shouldDisable = disabled;
 
   return (
@@ -156,11 +169,6 @@ FieldsButton.Checkbox = observer(({ column, children, disabled, enterpriseBadge 
           {children}
         </Checkbox>
       </div>
-      {enterpriseBadge && (
-        <div style={{ flexShrink: 0 }}>
-          <EnterpriseBadge style="ghost" />
-        </div>
-      )}
     </div>
   );
 });

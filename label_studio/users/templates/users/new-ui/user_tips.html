@@ -28,19 +28,6 @@
       {
         title: "Did you know?",
         description:
-          "There's an Enterprise version of Label Studio packed with more features and automation to label data faster while ensuring the highest quality.",
-        link: {
-          label: "Learn more",
-          url: "https://humansignal.com/goenterprise/",
-          params: {
-            experiment: "login_revamp",
-            treatment: "enterprise_platform",
-          },
-        },
-      },
-      {
-        title: "Did you know?",
-        description:
           "Label Studio has dozens of pre-built templates for all data types you can use to configure your labeling UI, from image classification to sentiment analysis to supervised LLM fine-tuning. ",
         link: {
           label: "See all templates",
@@ -50,18 +37,6 @@
             treatment: "templates",
           },
         },
-      },
-      {
-        title: "Did you know?",
-        description: "Label Studio now has a Starter Cloud offering optimized for small teams and projects.",
-        link: {
-          label: "Learn more",
-          url: "https://humansignal.com/pricing/",
-          params: {
-            experiment: "login_revamp",
-            treatment: "starter_cloud"
-          }
-        }
       },
     ],
   };
@@ -79,6 +54,10 @@
   }
 
   const loadLiveTipsCollection = () => {
+    localStorage.removeItem(CACHE_FETCHED_AT_KEY);
+    localStorage.removeItem(CACHE_KEY);
+    return defaultTipsCollection;
+
     // stale while revalidate - we will return the data present in the cache or the default data and fetch updated data to be put into the cache for the next time this function is called without waiting for the promise.
     const cachedData = localStorage.getItem(CACHE_KEY);
     const fetchedAt = localStorage.getItem(CACHE_FETCHED_AT_KEY);
@@ -94,7 +73,7 @@
     const abortTimeout = setTimeout(abortController.abort, MAX_TIMEOUT);
 
     // Fetch from github raw liveContent.json proxied through the server
-    fetch("/heidi-tips", {
+    fetch("/label-studio/heidi-tips", {
       headers: {
         "Cache-Control": "no-cache",
         "Content-Type": "application/json",

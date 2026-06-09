@@ -59,6 +59,7 @@ gtag('config', 'UA-129877673-1');
 
 <script nonce="{{request.csp_nonce}}">
   const gaClientIdTrackingIframe = (event) => {
+    return;
     if (!window.APP_SETTINGS?.collect_analytics) return;
     
     const iframe = document.createElement("iframe");
@@ -68,7 +69,7 @@ gtag('config', 'UA-129877673-1');
       }
     });
     const origin = window.location.origin;
-    iframe.src = `https://labelstud.io/track/?event=${event}&origin=${origin}`;
+    iframe.src = "about:blank";
     iframe.style.display = "none";
     iframe.style.visibility = "hidden";
     document.body.appendChild(iframe);

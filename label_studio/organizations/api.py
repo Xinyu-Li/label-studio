@@ -384,6 +384,9 @@ class OrganizationInviteAPI(generics.RetrieveAPIView):
     permission_required = all_permissions.organizations_invite
 
     def get(self, request, *args, **kwargs):
+        if settings.DISABLE_SIGNUP_WITHOUT_LINK is True:
+            raise PermissionDenied('Invitations are disabled for this deployment.')
+
         org = request.user.active_organization
         invite_url = '{}?token={}'.format(reverse('user-signup'), org.token)
         if hasattr(settings, 'FORCE_SCRIPT_NAME') and settings.FORCE_SCRIPT_NAME:
@@ -412,6 +415,9 @@ class OrganizationResetTokenAPI(APIView):
     parser_classes = (JSONParser,)
 
     def post(self, request, *args, **kwargs):
+        if settings.DISABLE_SIGNUP_WITHOUT_LINK is True:
+            raise PermissionDenied('Invitations are disabled for this deployment.')
+
         org = request.user.active_organization
         org.reset_token()
         logger.debug(f'New token for organization {org.pk} is {org.token}')

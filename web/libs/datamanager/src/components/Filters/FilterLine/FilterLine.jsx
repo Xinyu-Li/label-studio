@@ -1,7 +1,7 @@
 import React from "react";
 import { observer } from "mobx-react";
 import { cn } from "../../../utils/bem";
-import { Button, Badge, EnterpriseBadge } from "@humansignal/ui";
+import { Button, Badge } from "@humansignal/ui";
 import { IconClose } from "@humansignal/icons";
 import { FilterDropdown } from "../FilterDropdown";
 import "./FilterLine.scss";
@@ -11,6 +11,9 @@ import { filterFieldSearchHandler, findSelectedOption } from "../filter-helpers"
 import { RECENT_VALUE_PREFIX } from "../useRecentFilters";
 
 const RECENTS_AUTOSAVE_DELAY_MS = 500;
+
+const isEnterpriseFilter = (item) =>
+  item?.field?.enterprise_badge || item?.original?.field?.enterprise_badge || item?.enterprise_badge;
 
 const Conjunction = observer(({ index, view }) => {
   return (
@@ -54,14 +57,12 @@ function filterFieldOptionRender({ item }) {
   }
 
   const filter = original;
-  const showEnterpriseBadge = filter?.field?.enterprise_badge;
   return (
     <div
       className={cn("filterLine").elem("selector").toClassName()}
       style={{ display: "flex", alignItems: "center", gap: "6px" }}
     >
       <span>{filter?.field?.title}</span>
-      {showEnterpriseBadge && <EnterpriseBadge style="ghost" />}
       {filter?.field?.parent && (
         <Badge size="small" className="ml-tightest">
           {filter.field.parent.title}
@@ -111,6 +112,7 @@ function handleColumnChange(filter, availableFilters, selectedValue, onSaveOnSwi
 export const FilterLine = observer(
   ({ filter, availableFilters, index, view, sidebar, dropdownClassName, onSaveOnSwitch, onSaveInPlace }) => {
     const childFilter = filter.child_filter;
+    const visibleAvailableFilters = availableFilters.filter((item) => !isEnterpriseFilter(item));
 
     // Debounced auto-save: persist current filter state to recents after it settles.
     // Uses saveOnSwitch (adds to front) so the filter appears in recents even when
@@ -152,11 +154,11 @@ export const FilterLine = observer(
             <FilterDropdown
               placeholder="Column"
               defaultValue={filter.filter.id}
-              items={availableFilters}
+              items={visibleAvailableFilters}
               dropdownClassName={dropdownClassName}
               searchFilter={filterFieldSearchHandler}
               onChange={(selectedValue) =>
-                handleColumnChange(filter, availableFilters, selectedValue, onSaveOnSwitch, onSaveInPlace)
+                handleColumnChange(filter, visibleAvailableFilters, selectedValue, onSaveOnSwitch, onSaveInPlace)
               }
               optionRender={filterFieldOptionRender}
               disabled={filter.field.disabled}
@@ -251,13 +253,13 @@ export const FilterLine = observer(
           <FilterDropdown
             placeholder="Column"
             defaultValue={filter.filter.id}
-            items={availableFilters}
+            items={visibleAvailableFilters}
             width={80}
             dropdownWidth={170}
             dropdownClassName={dropdownClassName}
             searchFilter={filterFieldSearchHandler}
             onChange={(selectedValue) =>
-              handleColumnChange(filter, availableFilters, selectedValue, onSaveOnSwitch, onSaveInPlace)
+              handleColumnChange(filter, visibleAvailableFilters, selectedValue, onSaveOnSwitch, onSaveInPlace)
             }
             optionRender={filterFieldOptionRender}
             disabled={filter.field.disabled}

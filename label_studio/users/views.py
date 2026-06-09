@@ -56,6 +56,10 @@ def user_signup(request):
     if user.is_authenticated:
         return redirect(next_page)
 
+    # Registration is disabled for this deployment; accounts are synced from /opt/label-studio/config/users.tsv.
+    if settings.DISABLE_SIGNUP_WITHOUT_LINK is True:
+        raise PermissionDenied()
+
     # make a new user
     if request.method == 'POST':
         organization = Organization.objects.first()

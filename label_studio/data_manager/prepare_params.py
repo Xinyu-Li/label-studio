@@ -76,7 +76,7 @@ class Column(Enum):
     INNER_ID = 'inner_id', 'Number', 'Task Inner ID, it starts from 1 for all projects'
     GROUND_TRUTH = 'ground_truth', 'Boolean', 'Ground truth status of the tasks'
     ANNOTATIONS_RESULTS = 'annotations_results', 'String', 'Annotation results for the tasks'
-    REVIEWED = 'reviewed', 'Boolean', 'Whether the tasks have been reviewed (Enterprise only)'
+    REVIEWED = 'reviewed', 'Boolean', 'Whether the tasks have been reviewed'
     PREDICTIONS_SCORE = 'predictions_score', 'Number', 'Prediction score for the task'
     PREDICTIONS_MODEL_VERSIONS = 'predictions_model_versions', 'String', 'Model version used for the predictions'
     PREDICTIONS_RESULTS = 'predictions_results', 'String', 'Prediction results for the tasks'
@@ -90,7 +90,7 @@ class Column(Enum):
     ANNOTATORS = (
         'annotators',
         'List',
-        'Annotators that completed the task (Community). Can include assigned annotators (Enterprise only). '
+        'Annotators that completed the task. '
         'Important note: the filter `type` should be List, but the filter `value` is integer',
     )
     TOTAL_PREDICTIONS = 'total_predictions', 'Number', 'Total number of predictions for the task'
@@ -101,22 +101,22 @@ class Column(Enum):
     )
     TOTAL_ANNOTATIONS = 'total_annotations', 'Number', 'Total number of annotations on a task'
     COMPLETED_AT = 'completed_at', 'Datetime', 'Time when a task was fully annotated'
-    AGREEMENT = 'agreement', 'Number', 'Agreement for annotation results for a specific task (Enterprise only)'
+    AGREEMENT = 'agreement', 'Number', 'Agreement for annotation results for a specific task'
     REVIEWERS = (
         'reviewers',
         'String',
-        'Reviewers that reviewed the task, or assigned reviewers (Enterprise only). '
+        'Reviewers that reviewed the task. '
         'Important note: the filter `type` should be List, but the filter `value` is integer',
     )
     REVIEWS_REJECTED = (
         'reviews_rejected',
         'Number',
-        'Number of annotations rejected for a task in review (Enterprise only)',
+        'Number of annotations rejected for a task in review',
     )
     REVIEWS_ACCEPTED = (
         'reviews_accepted',
         'Number',
-        'Number of annotations accepted for a task in review (Enterprise only)',
+        'Number of annotations accepted for a task in review',
     )
     COMMENTS = 'comments', 'Number', 'Number of comments in a task'
     UNRESOLVED_COMMENT_COUNT = 'unresolved_comment_count', 'Number', 'Number of unresolved comments in a task'

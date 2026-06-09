@@ -1,18 +1,15 @@
-import { IconExternal, IconFolderAdd, IconHumanSignal, IconUserAdd, IconFolderOpen } from "@humansignal/icons";
+import { IconExternal, IconFolderAdd, IconHumanSignal, IconFolderOpen } from "@humansignal/icons";
 import { Button, SimpleCard, Spinner, Tooltip, Typography } from "@humansignal/ui";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useUpdatePageTitle } from "@humansignal/core";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { HeidiTips } from "../../components/HeidiTips/HeidiTips";
 import { useAPI } from "../../providers/ApiProvider";
 import { CreateProject } from "../CreateProject/CreateProject";
-import { InviteLink } from "../Organization/PeoplePage/InviteLink";
 import type { Page } from "../types/Page";
 import {
   creationDialogOpen,
-  invitationOpen,
   locationKeyAtom,
   PROJECTS_TO_SHOW,
   projectsDataAtom,
@@ -49,11 +46,6 @@ const actions = [
     icon: IconFolderAdd,
     type: "createProject",
   },
-  {
-    title: "Invite Members",
-    icon: IconUserAdd,
-    type: "inviteMembers",
-  },
 ] as const;
 
 type Action = (typeof actions)[number]["type"];
@@ -62,7 +54,6 @@ export const HomePage: Page = () => {
   const api = useAPI();
   const location = useLocation();
   const [modalIsOpen, setModalIsOpen] = useAtom(creationDialogOpen);
-  const [invitationIsOpen, setInvitationIsOpen] = useAtom(invitationOpen);
   const setLocationKey = useSetAtom(locationKeyAtom);
   const setProjectsData = useSetAtom(projectsDataAtom);
   const sortedProjects = useAtomValue(sortedProjectsAtom);
@@ -122,9 +113,6 @@ export const HomePage: Page = () => {
       switch (action) {
         case "createProject":
           setModalIsOpen(true);
-          break;
-        case "inviteMembers":
-          setInvitationIsOpen(true);
           break;
       }
     };
@@ -206,7 +194,6 @@ export const HomePage: Page = () => {
           </SimpleCard>
         </section>
         <section className="flex flex-col gap-6">
-          <HeidiTips collection="projectSettings" />
           <SimpleCard title="Resources" description="Learn, explore and get help" data-testid="resources-card">
             <ul>
               {resources.map((link) => {
@@ -233,7 +220,6 @@ export const HomePage: Page = () => {
         </section>
       </div>
       {modalIsOpen && <CreateProject onClose={() => setModalIsOpen(false)} />}
-      <InviteLink opened={invitationIsOpen} onClosed={() => setInvitationIsOpen(false)} />
     </main>
   );
 };
