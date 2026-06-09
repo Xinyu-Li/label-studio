@@ -4,6 +4,7 @@ param(
   [string]$BaseRef = "1.23.0",
   [switch]$SkipInstall,
   [switch]$SkipBuild,
+  [switch]$SkipDeploy,
   [switch]$SkipRemoteVerify
 )
 
@@ -160,6 +161,13 @@ try {
     }
     tar -czf $Archive -C $WorkRoot .
     Write-Host "archive $Archive"
+  }
+
+  if ($SkipDeploy) {
+    Write-Host ""
+    Write-Host "Local checks and packaging complete. Deployment skipped."
+    Write-Host "Archive: $Archive"
+    return
   }
 
   $remoteShell = @"

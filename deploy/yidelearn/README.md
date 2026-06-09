@@ -71,4 +71,7 @@ powershell -ExecutionPolicy Bypass -File D:\develop\label-studio\deploy\yidelear
 
 # Reuse an already-built web/dist/apps/labelstudio
 powershell -ExecutionPolicy Bypass -File D:\develop\label-studio\deploy\yidelearn\deploy-to-server.ps1 -SkipInstall -SkipBuild
+
+# Local dry run only: checks and packages, but does not upload or deploy
+powershell -ExecutionPolicy Bypass -File D:\develop\label-studio\deploy\yidelearn\deploy-to-server.ps1 -SkipInstall -SkipBuild -SkipDeploy
 ```
