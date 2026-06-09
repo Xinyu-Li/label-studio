@@ -10,6 +10,16 @@ links. Account credentials are stored on the server in:
 /opt/label-studio/config/users.tsv
 ```
 
+For local editing, use this ignored file:
+
+```text
+deploy/yidelearn/config/users.tsv
+```
+
+`deploy/yidelearn/config/users.tsv` is intentionally ignored by Git so plaintext
+passwords are not pushed to GitHub. `deploy/yidelearn/config/users.tsv.example`
+is the committed template.
+
 The TSV file must contain two tab-separated columns:
 
 ```text
@@ -56,6 +66,7 @@ The script:
 - verifies the built `main.js` no longer contains invitation or Enterprise-only
   UI phrases
 - packages the changed source files and `web/dist/apps/labelstudio`
+- uploads `deploy/yidelearn/config/users.tsv` if it exists locally
 - uploads the package to `root@39.105.142.24`
 - backs up the current server files under `/opt/label-studio/backups/`
 - deploys the new source/build files
@@ -74,4 +85,10 @@ powershell -ExecutionPolicy Bypass -File D:\develop\label-studio\deploy\yidelear
 
 # Local dry run only: checks and packages, but does not upload or deploy
 powershell -ExecutionPolicy Bypass -File D:\develop\label-studio\deploy\yidelearn\deploy-to-server.ps1 -SkipInstall -SkipBuild -SkipDeploy
+```
+
+To copy the current server credentials into the local ignored config file:
+
+```powershell
+scp -i C:\Users\Xinyu\.ssh\flora_beijing.pem root@39.105.142.24:/opt/label-studio/config/users.tsv D:\develop\label-studio\deploy\yidelearn\config\users.tsv
 ```

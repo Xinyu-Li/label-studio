@@ -1,6 +1,7 @@
 param(
   [string]$Server = "root@39.105.142.24",
   [string]$KeyFile = "$env:USERPROFILE\.ssh\flora_beijing.pem",
+  [string]$LocalUsersFile = "",
   [string]$BaseRef = "1.23.0",
   [switch]$SkipInstall,
   [switch]$SkipBuild,
@@ -19,6 +20,11 @@ $WorkRoot = Join-Path ([System.IO.Path]::GetTempPath()) "label-studio-deploy-$St
 $Archive = Join-Path ([System.IO.Path]::GetTempPath()) "label-studio-deploy-$Stamp.tar.gz"
 $RemoteArchive = "/tmp/label-studio-deploy-$Stamp.tar.gz"
 $RemoteScript = "/tmp/label-studio-deploy-$Stamp.sh"
+$RemoteUsersFile = "/tmp/label-studio-users-$Stamp.tsv"
+
+if ([string]::IsNullOrWhiteSpace($LocalUsersFile)) {
+  $LocalUsersFile = Join-Path $ScriptDir "config\users.tsv"
+}
 
 $RuntimePackageFiles = @(
   "label_studio/core/settings/base.py",
@@ -82,6 +88,11 @@ try {
     Require-Command yarn
     if (-not (Test-Path $KeyFile)) {
       throw "SSH key not found: $KeyFile"
+    }
+    if (Test-Path $LocalUsersFile) {
+      Write-Host "local users file will be uploaded: $LocalUsersFile"
+    } else {
+      Write-Host "no local users.tsv found; server users.tsv will be kept"
     }
     git rev-parse --verify $BaseRef | Out-Null
   }
@@ -175,6 +186,7 @@ try {
 set -euo pipefail
 
 pkg="$RemoteArchive"
+users_file="$RemoteUsersFile"
 source_root="/opt/label-studio/app/source"
 site_root="/opt/label-studio/venv/lib/python3.12/site-packages"
 config_root="/opt/label-studio/config"
@@ -213,6 +225,11 @@ cp "`$source_root/deploy/yidelearn/sync_users.sh" "`$config_root/sync_users.sh"
 chmod 600 "`$config_root/seed_users.py"
 chmod 700 "`$config_root/sync_users.sh"
 
+if [ -s "`$users_file" ]; then
+  cp "`$users_file" "`$config_root/users.tsv"
+  chmod 600 "`$config_root/users.tsv"
+fi
+
 for f in $($RuntimePackageFiles -join ' '); do
   cp "`$source_root/`$f" "`$site_root/`$f"
 done
@@ -230,6 +247,9 @@ echo "backup=`$backup"
   Invoke-Checked "Uploading archive and remote deploy script" {
     scp -i $KeyFile -o StrictHostKeyChecking=accept-new $Archive "${Server}:$RemoteArchive"
     scp -i $KeyFile -o StrictHostKeyChecking=accept-new $remoteScriptLocal "${Server}:$RemoteScript"
+    if (Test-Path $LocalUsersFile) {
+      scp -i $KeyFile -o StrictHostKeyChecking=accept-new $LocalUsersFile "${Server}:$RemoteUsersFile"
+    }
   }
 
   Invoke-Checked "Deploying on server" {
